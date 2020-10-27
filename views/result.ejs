@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/style.css">
+    <title></title>
+  </head>
+  <body>
+    <header>
+      <a href="/" class="header-logo">Google maps Route App</a>
+    </header>
+    <ul class="">
+      <% images.forEach((image) => { %>
+        <li>
+          <div class="item">
+            <img src="<%= image.url %>" alt="" class="image">
+            <div class="instruction" id = "<%= image.id%>"></div>
+          </div>
+        </li>
+      <% }) %>
+    </ul>
+    <form action="/save" method="post">
+      <input type="submit" value="保存する">
+    </form>
+    <script type="text/javascript">
+      images.forEach((image) => {
+        image.id.insertAdjacentHTML('beforeend', image.html);
+      })
+    </script>
+  </body>
+</html>

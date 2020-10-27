@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/style.css">
+    <title></title>
+  </head>
+  <body>
+    <header>
+      <a href="/" class="header-logo">Google maps Route App</a>
+    </header>
+    <div class="container">
+      <div class="container-header">
+        <h1>ルート検索リスト</h1>
+        <a href="/search" class="new-button">+ 新規検索</a>
+      </div>
+      <div class="index-table-wrapper">
+        <div class="table-head">
+          <span class="id-column">ID</span>
+          <span class="origin-column">出発地</span>
+          <span class="destination-column">目的地</span>
+        </div>
+        <ul class="table-body">
+          <% results.forEach((result) => { %>
+            <li>
+              <div class="item-data">
+                <span class="id-column"><%= result.id %></span>
+                <span class="origin-column"><%= result.origin %></span>
+                <span class="destination-column"><%= result.destination %></span>
+                <span class="date-column"><%= result.date %></span>
+              </div>
+              <div class="item-menu">
+                <form action="/delete/<%= result.id %>" method="post">
+                  <input type="submit" value="削除">
+                </form>
+                <a href="/check/<%= result.id %>">確認</a>
+              </div>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>
