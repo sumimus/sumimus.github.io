@@ -1,9 +1,8 @@
 const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
-const app = express();
 const https = require('https');
-const request = require('request');
+const app = express();
 
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: false }));
@@ -14,7 +13,7 @@ let route = {origin:"",destination:""};
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'Sumi1030sql',
+  password: 'password',
   database: 'MapImages'
 });
 
@@ -32,34 +31,29 @@ app.get('/search', (req, res) => {
 });
 
 app.post('/result', (req, res) => {
-  if(!req.body.origin || !req.body.destination){
-    console.log("未入力の項目があります。");
-    res.render('search.ejs');
-  }
   route = {origin:req.body.origin,destination:req.body.destination};
   const URL = `https://maps.googleapis.com/maps/api/directions/json?origin="${route.origin}"&destination="${route.destination}"&key=API`;
 
   let data = [];
-  let imageData =[];
+  let steps =[];
 
   https.get(URL, function (response) {
     response.on('data', function(chunk) {
       data.push(chunk);
     }).on('end', function() {
+      let routeJson = JSON.parse(Buffer.concat(data));
+      let idCount = 0;
 
-      let events   = Buffer.concat(data);
-      let r = JSON.parse(events);
-      let count = 0;
+      routeJson.routes[0].legs[0].steps.forEach(target => {
+        const url = `https://maps.googleapis.com/maps/api/streetview?size=320x240&heading=180&fov=120&location=${target.end_location.lat},${target.end_location.lng}&sensor=false&key=API`;
+        steps.push({url: url,
+                    html: target.html_instructions,
+                    id: 'image${idCount}'});
+        idCount++;
+      });
 
-      r.routes[0].legs[0].steps.forEach(target => {
-          const imageURL = `https://maps.googleapis.com/maps/api/streetview?size=640x480&heading=180&fov=120&location=${target.end_location.lat},${target.end_location.lng}&sensor=false&key=API`;
-          imageData.push({url: imageURL,
-                          html: target.html_instructions,
-                          id: 'image${count}'});
-          count++;
-        });
-        count = 0;
-        res.render('result.ejs',{images: imageData});
+      idCount = 0;
+      res.render('result.ejs',{images: steps});
       });
   });
 });
@@ -72,6 +66,7 @@ app.post('/save',(req,res) => {
     if(error){
       console.log("error");
     }
+
     res.redirect('/');
     }
   );
@@ -87,12 +82,13 @@ app.post('/delete/:id', (req, res) => {
   );
 });
 
-connection.connect((err) => {
-  if (err) {
-    console.log('error connecting: ' + err.stack);
+connection.connect((error) => {
+  if (error) {
+    console.log('error connecting: ' + error.stack);
     return;
   }
-  console.log('success--------------------------------');
+
+  console.log('success');
 });
 
 app.listen(3000);

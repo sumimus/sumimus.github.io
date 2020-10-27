@@ -9,7 +9,7 @@
     <header>
       <a href="/" class="header-logo">Google maps Route App</a>
     </header>
-    <ul class="">
+    <ul>
       <% images.forEach((image) => { %>
         <li>
           <div class="item">
@@ -22,10 +22,5 @@
     <form action="/save" method="post">
       <input type="submit" value="保存する">
     </form>
-    <script type="text/javascript">
-      images.forEach((image) => {
-        image.id.insertAdjacentHTML('beforeend', image.html);
-      })
-    </script>
   </body>
 </html>
